@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "context/AuthContext";
 
 const Dashboard = () => {
   const [disclaimers, setDisclaimers] = useState([]);
   const [selectedDisclaimer, setSelectedDisclaimer] = useState("");
+  const { isLoggedIn, login, logout, deletion } = useAuth();
 
   useEffect(() => {
     const disclaimers = async () => {
@@ -22,6 +24,11 @@ const Dashboard = () => {
     };
     disclaimers();
   }, []);
+
+  const handleDelete = async (id: string) => {
+    await deletion(id);
+    setDisclaimers((prev) => prev.filter((d) => d.id != id));
+  };
 
   return (
     <>
@@ -42,6 +49,10 @@ const Dashboard = () => {
                 <Link to={`/disclaimer/${disclaimer.id}`}>
                   View Disclaimer
                 </Link>{" "}
+                <div onClick={() => handleDelete(disclaimer.id)}>
+                  {" "}
+                  <Link to="/dashboard">Delete</Link>
+                </div>
               </div>
             </li>
           );
