@@ -1,8 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "context/AuthContext";
 
 const DiscalimerGeneratorPage = () => {
+  const { isLoggedIn, login, logout } = useAuth();
   const [formData, setFormData] = useState({
     topic: "",
     tone: "",
@@ -32,8 +34,6 @@ const DiscalimerGeneratorPage = () => {
           tone: formData.tone,
         }),
       });
-
-      console.log("response", res);
 
       const data = await res.json();
       setGeneratedDisclaimer(data.disclaimer);
@@ -77,6 +77,21 @@ const DiscalimerGeneratorPage = () => {
       <p>{generatedDisclaimer}</p>
 
       <p></p>
+      <div>
+        {" "}
+        {isLoggedIn ? (
+          <button onClick={logout}> Logout</button>
+        ) : (
+          <div>
+            <button>
+              {" "}
+              <Link to="/signin"> Login </Link>
+            </button>
+            <Link to="/signup"> SignUp </Link>
+          </div>
+        )}{" "}
+        <Link to="/dashboard">Dashobard</Link>
+      </div>
     </>
   );
 };

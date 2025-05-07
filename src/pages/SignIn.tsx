@@ -2,13 +2,21 @@ import { application } from "express";
 import React from "react";
 import { useState, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import { useAuth } from "context/AuthContext";
 
 const SignIn = () => {
+  const { isLoggedIn, login } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  const [error, setError] = useState<string | null>(null);
+
+  if (isLoggedIn) {
+    return <Navigate to="/" />;
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -18,28 +26,18 @@ const SignIn = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(null); // Reset error state
     console.log("Form submitted:", formData);
-    fetch("http://localhost:3000/users/sign_in", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({ user: formData }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Login Failed");
-        return res.json();
-      })
-      .then((data) => {
-        console.log("Login success", data);
-        navigate("/");
-      })
-      .catch((err) => {
-        console.error("Login error:", err.message);
-      });
+
+    try {
+      await login({ email: formData.email, password: formData.password });
+      navigate("/"); // Navigate to homepage after successful login
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("Login failed. Please check your email and password.");
+    }
   };
 
   return (
