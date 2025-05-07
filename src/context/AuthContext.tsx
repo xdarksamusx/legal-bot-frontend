@@ -4,6 +4,7 @@ type AuthContextType = {
   isLoggedIn: boolean;
   logout: () => Promise<void>;
   login: (credentials: { email: string; password: string }) => Promise<void>;
+  deletion: (id: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -55,17 +56,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setIsLoggedIn(false);
     }
   };
+  const deletion = async (id: string): Promise<void> => {
+    try {
+      const res = await fetch(`http://localhost:3000/disclaimers/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
 
-  //   const delete = async () => {
-
-  //   }
+      if (res.ok) {
+        console.log("Disclaimer deleted");
+      } else {
+        console.error("Failed to delete");
+      }
+    } catch (error) {
+      console.error("Error during deletion:", error);
+    }
+  };
 
   useEffect(() => {
     console.log("isLoggedIn updated:", isLoggedIn);
   }, [isLoggedIn]);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, logout, login }}>
+    <AuthContext.Provider value={{ isLoggedIn, logout, login, deletion }}>
       {children}
     </AuthContext.Provider>
   );

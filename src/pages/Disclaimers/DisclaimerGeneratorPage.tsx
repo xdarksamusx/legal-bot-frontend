@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useAuth } from "context/AuthContext";
 
 const DiscalimerGeneratorPage = () => {
-  const { isLoggedIn, login, logout } = useAuth();
+  const { isLoggedIn, login, logout, deletion } = useAuth();
   const [formData, setFormData] = useState({
     topic: "",
     tone: "",
