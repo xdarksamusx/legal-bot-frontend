@@ -49,6 +49,9 @@ const Dashboard = () => {
                 <Link to={`/disclaimer/${disclaimer.id}`}>
                   View Disclaimer
                 </Link>{" "}
+                <Link to={`/disclaimer/${disclaimer.id}/edit`}>
+                  Edit Disclaimer
+                </Link>{" "}
                 <div onClick={() => handleDelete(disclaimer.id)}>
                   {" "}
                   <Link to="/dashboard">Delete</Link>

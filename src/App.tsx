@@ -6,6 +6,7 @@ import DiscalimerGeneratorPage from "pages/Disclaimers/DisclaimerGeneratorPage";
 import { AuthProvider } from "context/AuthContext";
 import Dashboard from "pages/Dashboard/Dashobard";
 import ViewDisclaimer from "pages/Disclaimers/ViewDisclaimer";
+import EditDisclaimer from "pages/Disclaimers/EditDisclaimer";
 
 const App = () => {
   return (
@@ -15,7 +16,8 @@ const App = () => {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/" element={<DiscalimerGeneratorPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/disclaimer/:id" element={<ViewDisclaimer />} />
+        <Route path="/disclaimers/:id" element={<ViewDisclaimer />} />
+        <Route path="/disclaimers/:id/edit" element={<EditDisclaimer />} />
       </Routes>
     </AuthProvider>
   );
