@@ -39,7 +39,7 @@ const EditDisclaimer = () => {
       .then((data) => {
         console.log("disclaimer updated", data);
         setFormData(data);
-        navigate(`/disclaimer/:${id}`);
+        navigate("/dashboard");
       })
       .catch((err) => {
         console.error("Error  submitted update", err);

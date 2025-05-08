@@ -1,9 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 
 type AuthContextType = {
   isLoggedIn: boolean;
-  logout: () => Promise<void>;
-  login: (credentials: { email: string; password: string }) => Promise<void>;
+  logout: (navigate: NavigateFunction) => Promise<void>;
+  login: (
+    credentials: { email: string; password: string },
+    navigate: NavigateFunction
+  ) => Promise<void>;
   deletion: (id: string) => Promise<void>;
 };
 
@@ -12,7 +16,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const login = async ({ email, password }) => {
+  const login = async (
+    { email, password }: { email: string; password: string },
+    navigate: NavigateFunction
+  ) => {
     try {
       const res = await fetch("http://localhost:3000/users/sign_in", {
         method: "POST",
@@ -28,6 +35,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (res.ok) {
         setIsLoggedIn(true);
+        navigate("/dashboard");
+
         console.log("Login successful and login status", isLoggedIn);
       } else {
         setIsLoggedIn(false);
@@ -39,7 +48,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const logout = async () => {
+  const logout = async (navigate: (path: string) => void) => {
     try {
       const res = await fetch("http://localhost:3000/users/sign_out", {
         method: "DELETE",
@@ -48,6 +57,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (res.ok) {
         setIsLoggedIn(false);
+        navigate("/signin");
       } else {
         console.error("Logout failed");
       }

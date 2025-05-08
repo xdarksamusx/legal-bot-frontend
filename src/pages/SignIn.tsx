@@ -28,12 +28,15 @@ const SignIn = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null); // Reset error state
+    setError(null);
     console.log("Form submitted:", formData);
 
     try {
-      await login({ email: formData.email, password: formData.password });
-      navigate("/"); // Navigate to homepage after successful login
+      await login(
+        { email: formData.email, password: formData.password },
+        navigate
+      );
+      navigate("/");
     } catch (err) {
       console.error("Login error:", err);
       setError("Login failed. Please check your email and password.");

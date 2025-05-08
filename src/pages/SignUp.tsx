@@ -28,7 +28,10 @@ const SignUp = () => {
     console.log("sign up response", res);
 
     if (res.ok) {
-      await login({ email: formData.email, password: formData.password });
+      await login(
+        { email: formData.email, password: formData.password },
+        navigate
+      );
       navigate("/");
     } else {
       console.error("Sign up failed");
