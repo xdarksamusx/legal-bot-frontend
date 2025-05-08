@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "context/AuthContext";
+import { Navigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [disclaimers, setDisclaimers] = useState([]);
   const [selectedDisclaimer, setSelectedDisclaimer] = useState("");
   const { isLoggedIn, login, logout, deletion } = useAuth();
@@ -41,34 +43,39 @@ const Dashboard = () => {
               key={disclaimer.id}
               className="border-2 border-solid border-red-500"
             >
-              <div> {disclaimer.topic} </div>
-              <div> {disclaimer.tone} </div>
-              <div> {disclaimer.statement} </div>
               <div>
                 {" "}
-                <Link to={`/disclaimer/${disclaimer.id}`}>
-                  View Disclaimer
-                </Link>{" "}
-                <Link to={`/disclaimer/${disclaimer.id}/edit`}>
-                  Edit Disclaimer
-                </Link>{" "}
-                <div onClick={() => handleDelete(disclaimer.id)}>
+                <span>topic </span> {disclaimer.topic}{" "}
+              </div>
+              <div> tone: {disclaimer.tone} </div>
+              <div>
+                <span>statement:</span>
+                {disclaimer.statement}
+              </div>
+              <div>
+                <button>
+                  {" "}
+                  <Link to={`/disclaimers/${disclaimer.id}`}>
+                    View Disclaimer
+                  </Link>{" "}
+                </button>
+
+                <button>
+                  <Link to={`/disclaimers/${disclaimer.id}/edit`}>
+                    Edit Disclaimer
+                  </Link>{" "}
+                </button>
+
+                <button onClick={() => handleDelete(disclaimer.id)}>
                   {" "}
                   <Link to="/dashboard">Delete</Link>
-                </div>
+                </button>
               </div>
             </li>
           );
         })}
       </ul>
-
-      <p>topic: </p>
-
-      <p>tone:</p>
-
-      <div>
-        <p>statement:</p>
-      </div>
+      <button onClick={() => logout(navigate)}>Logout</button>
     </>
   );
 };

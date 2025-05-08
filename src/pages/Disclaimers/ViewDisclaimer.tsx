@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 const ViewDisclaimer = () => {
   const { id } = useParams<{ id: string }>();
   const [disclaimer, setDisclaimer] = useState<any>(null);
+  const { isLoggedIn, login, logout, deletion } = useAuth();
+  const [disclaimers, setDisclaimers] = useState([]);
 
   useEffect(() => {
     if (!id) return;
@@ -24,6 +26,11 @@ const ViewDisclaimer = () => {
       .catch((err) => console.error("Failed to load disclaimer", err));
   }, [id]);
 
+  const handleDelete = async (id: string) => {
+    await deletion(id);
+    setDisclaimers((prev) => prev.filter((d) => d.id != id));
+  };
+
   return (
     <>
       <h1>Disclaimer information</h1>
@@ -35,8 +42,18 @@ const ViewDisclaimer = () => {
       ) : (
         <p>Loading...</p>
       )}
-      <Link to={`/disclaimers/${id}/edit`}>Edit</Link>
-      <Link to="/dashboard">Dashboard</Link>
+      <button>
+        {" "}
+        <Link to={`/disclaimers/${id}/edit`}>Edit</Link>
+      </button>
+      <button onClick={() => handleDelete(disclaimer.id)}>
+        {" "}
+        <Link to="/dashboard">Delete</Link>
+      </button>
+      <div>
+        {" "}
+        <Link to="/dashboard">Dashboard</Link>{" "}
+      </div>
     </>
   );
 };

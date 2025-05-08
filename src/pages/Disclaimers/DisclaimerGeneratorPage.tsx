@@ -1,9 +1,11 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "context/AuthContext";
+import { Navigate } from "react-router-dom";
 
 const DiscalimerGeneratorPage = () => {
+  const navigate = useNavigate;
   const { isLoggedIn, login, logout, deletion } = useAuth();
   const [formData, setFormData] = useState({
     topic: "",
@@ -80,7 +82,7 @@ const DiscalimerGeneratorPage = () => {
       <div>
         {" "}
         {isLoggedIn ? (
-          <button onClick={logout}> Logout</button>
+          <button onClick={() => logout(navigate)}> Logout</button>
         ) : (
           <div>
             <button>
