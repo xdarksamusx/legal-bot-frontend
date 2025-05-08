@@ -3,8 +3,12 @@ import { useState } from "react";
 import { useAuth } from "context/AuthContext";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const ViewDisclaimer = () => {
+  const navigate = useNavigate();
+
   const { id } = useParams<{ id: string }>();
   const [disclaimer, setDisclaimer] = useState<any>(null);
   const { isLoggedIn, login, logout, deletion } = useAuth();
@@ -54,6 +58,7 @@ const ViewDisclaimer = () => {
         {" "}
         <Link to="/dashboard">Dashboard</Link>{" "}
       </div>
+      <button onClick={() => logout(navigate)}>Logout</button>
     </>
   );
 };
