@@ -6,13 +6,19 @@ import { Navigate } from "react-router-dom";
 
 const DiscalimerGeneratorPage = () => {
   const navigate = useNavigate;
-  const { isLoggedIn, login, logout, deletion } = useAuth();
+  const {
+    isLoggedIn,
+    login,
+    logout,
+    deletion,
+    generatedDisclaimer,
+    setGeneratedDisclaimer,
+    isOpen,
+  } = useAuth();
   const [formData, setFormData] = useState({
     topic: "",
     tone: "",
   });
-
-  const [generatedDisclaimer, setGeneratedDisclaimer] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

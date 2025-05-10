@@ -9,6 +9,10 @@ type Disclaimer = {
 };
 
 type AuthContextType = {
+  generatedDisclaimer: string;
+  setGeneratedDisclaimer: React.Dispatch<React.SetStateAction<string>>;
+  handleCloseButton: () => void;
+
   disclaimers: Disclaimer[];
   setDisclaimers: React.Dispatch<React.SetStateAction<Disclaimer[]>>;
   isLoggedIn: boolean;
@@ -19,14 +23,22 @@ type AuthContextType = {
     navigate: NavigateFunction
   ) => Promise<void>;
   deletion: (id: string) => Promise<void>;
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [generatedDisclaimer, setGeneratedDisclaimer] = useState("");
 
   const [disclaimers, setDisclaimers] = useState([]);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const handleCloseButton = () => {
+    setIsOpen((prev) => !prev);
+  };
 
   const updateDisclaimers = async () => {
     const res = await fetch(`http://localhost:3000/disclaimers`, {
@@ -128,6 +140,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         disclaimers,
         setDisclaimers,
         updateDisclaimers,
+        generatedDisclaimer,
+        setGeneratedDisclaimer,
+        setIsOpen,
+        isOpen,
+        handleCloseButton,
       }}
     >
       {children}
