@@ -12,6 +12,7 @@ type AuthContextType = {
   generatedDisclaimer: string;
   setGeneratedDisclaimer: React.Dispatch<React.SetStateAction<string>>;
   handleCloseButton: () => void;
+  createDisclaimer: (topic: string, tone: string) => Promise<void>;
 
   disclaimers: Disclaimer[];
   setDisclaimers: React.Dispatch<React.SetStateAction<Disclaimer[]>>;
@@ -53,6 +54,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const data = await res.json();
 
     setDisclaimers(data);
+  };
+
+  const createDisclaimer = async (topic, tone) => {
+    try {
+      const res = await fetch("http://localhost:3000/api/generate_disclaimer", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          topic: topic,
+          tone: tone,
+        }),
+      });
+
+      const data = await res.json();
+      setGeneratedDisclaimer(data.disclaimer);
+      console.log(data, "generated disclaimer");
+    } catch (error) {
+      console.error("Error generating disclaimer:", error);
+      setGeneratedDisclaimer(
+        "Something went wrong while generating the disclaimer."
+      );
+    }
   };
 
   const login = async (
@@ -145,6 +170,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setIsOpen,
         isOpen,
         handleCloseButton,
+        createDisclaimer,
       }}
     >
       {children}

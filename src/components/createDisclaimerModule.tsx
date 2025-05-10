@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "context/AuthContext";
 import CloseButton from "./CloseButton";
 
@@ -11,7 +11,18 @@ const DisclaimerModule = () => {
     deletion,
     generatedDisclaimer,
     setGeneratedDisclaimer,
+    isOpen,
+    createDisclaimer,
   } = useAuth();
+
+  const [formData, setFormData] = useState({ topic: "", tone: "" });
+
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({ topic: "", tone: "" });
+      setGeneratedDisclaimer("");
+    }
+  }, [isOpen]);
 
   return (
     <>
@@ -20,12 +31,24 @@ const DisclaimerModule = () => {
         <div>
           <div>
             <label>topic</label>
-            <input />
+            <input
+              name="topic"
+              value={formData.topic}
+              onChange={(e) =>
+                setFormData({ ...formData, [e.target.name]: e.target.value })
+              }
+            />
           </div>
 
           <div>
             <label>tone</label>
-            <input />
+            <input
+              name="tone"
+              value={formData.tone}
+              onChange={(e) =>
+                setFormData({ ...formData, [e.target.name]: e.target.value })
+              }
+            />
           </div>
         </div>
 
@@ -34,7 +57,9 @@ const DisclaimerModule = () => {
             statement : <span> {generatedDisclaimer}</span>
           </p>
         </div>
-        <button>Generate Disclaimer</button>
+        <button onClick={() => createDisclaimer(formData.tone, formData.topic)}>
+          Generate Disclaimer
+        </button>
       </div>
     </>
   );
