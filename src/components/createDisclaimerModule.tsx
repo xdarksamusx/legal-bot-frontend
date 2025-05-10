@@ -15,7 +15,7 @@ const DisclaimerModule = () => {
 
   return (
     <>
-      <div className="w-48 bg-sky-600">
+      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 bg-white p-6 rounded-lg shadow-lg z-50">
         <CloseButton />
         <div>
           <div>
@@ -30,8 +30,11 @@ const DisclaimerModule = () => {
         </div>
 
         <div>
-          <p>statement</p>
+          <p>
+            statement : <span> {generatedDisclaimer}</span>
+          </p>
         </div>
+        <button>Generate Disclaimer</button>
       </div>
     </>
   );

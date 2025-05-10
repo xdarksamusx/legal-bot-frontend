@@ -25,7 +25,12 @@ const Dashboard = () => {
         <button onClick={handleCreateDisclaimer}>Create a Disclaimer </button>
 
         <button onClick={() => logout(navigate)}>Logout</button>
-        {isOpen && <DisclaimerModule />}
+        {isOpen && (
+          <>
+            <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40" />
+            <DisclaimerModule />
+          </>
+        )}
       </div>
     </>
   );
