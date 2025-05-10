@@ -1,8 +1,18 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 
+type Disclaimer = {
+  id: string;
+  topic: string;
+  tone: string;
+  statement: string;
+};
+
 type AuthContextType = {
+  disclaimers: Disclaimer[];
+  setDisclaimers: React.Dispatch<React.SetStateAction<Disclaimer[]>>;
   isLoggedIn: boolean;
+  updateDisclaimers: () => Promise<void>;
   logout: (navigate: NavigateFunction) => Promise<void>;
   login: (
     credentials: { email: string; password: string },
@@ -15,6 +25,23 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const [disclaimers, setDisclaimers] = useState([]);
+
+  const updateDisclaimers = async () => {
+    const res = await fetch(`http://localhost:3000/disclaimers`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      credentials: "include",
+    });
+
+    const data = await res.json();
+
+    setDisclaimers(data);
+  };
 
   const login = async (
     { email, password }: { email: string; password: string },
@@ -92,7 +119,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [isLoggedIn]);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, logout, login, deletion }}>
+    <AuthContext.Provider
+      value={{
+        isLoggedIn,
+        logout,
+        login,
+        deletion,
+        disclaimers,
+        setDisclaimers,
+        updateDisclaimers,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
