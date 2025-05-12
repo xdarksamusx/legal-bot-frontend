@@ -7,13 +7,25 @@ import DisclaimerModule from "components/createDisclaimerModule";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [disclaimers, setDisclaimers] = useState([]);
   const [selectedDisclaimer, setSelectedDisclaimer] = useState("");
-  const { isLoggedIn, login, logout, deletion, isOpen, setIsOpen } = useAuth();
+  const {
+    isLoggedIn,
+    login,
+    logout,
+    deletion,
+    isOpen,
+    setIsOpen,
+    updateDisclaimers,
+    disclaimers,
+  } = useAuth();
 
   const handleCreateDisclaimer = () => {
     setIsOpen((prev) => !prev);
   };
+
+  useEffect(() => {
+    updateDisclaimers();
+  }, []);
 
   return (
     <>
@@ -25,6 +37,7 @@ const Dashboard = () => {
         <button onClick={handleCreateDisclaimer}>Create a Disclaimer </button>
 
         <button onClick={() => logout(navigate)}>Logout</button>
+        <Link to="/">Home</Link>
         {isOpen && (
           <>
             <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40" />

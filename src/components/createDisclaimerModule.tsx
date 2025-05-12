@@ -24,43 +24,44 @@ const DisclaimerModule = () => {
     }
   }, [isOpen]);
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await createDisclaimer(formData.topic, formData.tone);
+  };
+
   return (
     <>
-      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 bg-white p-6 rounded-lg shadow-lg z-50">
-        <CloseButton />
-        <div>
+      <form onSubmit={handleSubmit}>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 bg-white p-6 rounded-lg shadow-lg z-50">
+          <CloseButton />
           <div>
-            <label>topic</label>
-            <input
-              name="topic"
-              value={formData.topic}
-              onChange={(e) =>
-                setFormData({ ...formData, [e.target.name]: e.target.value })
-              }
-            />
+            <div>
+              <label>topic</label>
+              <input
+                name="topic"
+                value={formData.topic}
+                onChange={(e) =>
+                  setFormData({ ...formData, [e.target.name]: e.target.value })
+                }
+              />
+            </div>
+
+            <div>
+              <label>tone</label>
+              <input
+                name="tone"
+                value={formData.tone}
+                onChange={(e) =>
+                  setFormData({ ...formData, [e.target.name]: e.target.value })
+                }
+              />
+            </div>
           </div>
 
-          <div>
-            <label>tone</label>
-            <input
-              name="tone"
-              value={formData.tone}
-              onChange={(e) =>
-                setFormData({ ...formData, [e.target.name]: e.target.value })
-              }
-            />
-          </div>
+          <div></div>
+          <button type="submit">Generate Disclaimer</button>
         </div>
-
-        <div>
-          <p>
-            statement : <span> {generatedDisclaimer}</span>
-          </p>
-        </div>
-        <button onClick={() => createDisclaimer(formData.tone, formData.topic)}>
-          Generate Disclaimer
-        </button>
-      </div>
+      </form>
     </>
   );
 };

@@ -18,10 +18,6 @@ const DisclaimerList = () => {
     setDisclaimers((prev) => prev.filter((d) => d.id != id));
   };
 
-  useEffect(() => {
-    updateDisclaimers();
-  }, []);
-
   return (
     <>
       <ul>

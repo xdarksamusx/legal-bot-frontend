@@ -58,19 +58,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const createDisclaimer = async (topic, tone) => {
     try {
-      const res = await fetch("http://localhost:3000/api/generate_disclaimer", {
+      const res = await fetch("http://localhost:3000/disclaimers", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify({
           topic: topic,
           tone: tone,
         }),
+        credentials: "include",
       });
 
       const data = await res.json();
-      setGeneratedDisclaimer(data.disclaimer);
+      setGeneratedDisclaimer(data.statement);
+      await updateDisclaimers();
       console.log(data, "generated disclaimer");
     } catch (error) {
       console.error("Error generating disclaimer:", error);

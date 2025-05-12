@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "context/AuthContext";
@@ -15,6 +15,8 @@ const DisclaimerGeneratorPage = () => {
     setGeneratedDisclaimer,
     isOpen,
     createDisclaimer,
+    disclaimers,
+    setDisclaimers,
   } = useAuth();
   const [formData, setFormData] = useState({
     topic: "",
@@ -35,6 +37,12 @@ const DisclaimerGeneratorPage = () => {
     await createDisclaimer(formData.topic, formData.tone);
   };
 
+  useEffect(() => {
+    if (generatedDisclaimer) {
+      console.log("✔️ generated disclaimer updated:", generatedDisclaimer);
+    }
+  }, [generatedDisclaimer]);
+
   return (
     <>
       <h1>Disclaimers </h1>
@@ -43,28 +51,29 @@ const DisclaimerGeneratorPage = () => {
         <div>
           <label>Topic</label>
           <input
-            value={formData.tone}
-            name="tone"
-            onChange={handleChange}
-            type="tone"
-          />
-        </div>
-
-        <div>
-          <label>Tone</label>
-          <input
             value={formData.topic}
             name="topic"
             onChange={handleChange}
             type="topic"
           />
         </div>
+
+        <div>
+          <label>Tone</label>
+          <input
+            value={formData.tone}
+            name="tone"
+            onChange={handleChange}
+            type="tone"
+          />
+        </div>
         <button>Generate</button>
       </form>
 
       <h3> Generated Disclaimer:</h3>
-      <p>{generatedDisclaimer}</p>
-
+      {generatedDisclaimer && (
+        <p className="mt-4 whitespace-pre-line">{generatedDisclaimer}</p>
+      )}
       <p></p>
       <div>
         {" "}
