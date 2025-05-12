@@ -1,18 +1,27 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "context/AuthContext";
 import { Navigate } from "react-router-dom";
 
-const DiscalimerGeneratorPage = () => {
-  const navigate = useNavigate;
-  const { isLoggedIn, login, logout, deletion } = useAuth();
+const DisclaimerGeneratorPage = () => {
+  const navigate = useNavigate();
+  const {
+    isLoggedIn,
+    login,
+    logout,
+    deletion,
+    generatedDisclaimer,
+    setGeneratedDisclaimer,
+    isOpen,
+    createDisclaimer,
+    disclaimers,
+    setDisclaimers,
+  } = useAuth();
   const [formData, setFormData] = useState({
     topic: "",
     tone: "",
   });
-
-  const [generatedDisclaimer, setGeneratedDisclaimer] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -25,28 +34,14 @@ const DiscalimerGeneratorPage = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try {
-      const res = await fetch("http://localhost:3000/api/generate_disclaimer", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          topic: formData.topic,
-          tone: formData.tone,
-        }),
-      });
-
-      const data = await res.json();
-      setGeneratedDisclaimer(data.disclaimer);
-      console.log(data, "generated disclaimer");
-    } catch (error) {
-      console.error("Error generating disclaimer:", error);
-      setGeneratedDisclaimer(
-        "Something went wrong while generating the disclaimer."
-      );
-    }
+    await createDisclaimer(formData.topic, formData.tone);
   };
+
+  useEffect(() => {
+    if (generatedDisclaimer) {
+      console.log("✔️ generated disclaimer updated:", generatedDisclaimer);
+    }
+  }, [generatedDisclaimer]);
 
   return (
     <>
@@ -56,28 +51,29 @@ const DiscalimerGeneratorPage = () => {
         <div>
           <label>Topic</label>
           <input
-            value={formData.tone}
-            name="tone"
-            onChange={handleChange}
-            type="tone"
-          />
-        </div>
-
-        <div>
-          <label>Tone</label>
-          <input
             value={formData.topic}
             name="topic"
             onChange={handleChange}
             type="topic"
           />
         </div>
+
+        <div>
+          <label>Tone</label>
+          <input
+            value={formData.tone}
+            name="tone"
+            onChange={handleChange}
+            type="tone"
+          />
+        </div>
         <button>Generate</button>
       </form>
 
       <h3> Generated Disclaimer:</h3>
-      <p>{generatedDisclaimer}</p>
-
+      {generatedDisclaimer && (
+        <p className="mt-4 whitespace-pre-line">{generatedDisclaimer}</p>
+      )}
       <p></p>
       <div>
         {" "}
@@ -98,4 +94,4 @@ const DiscalimerGeneratorPage = () => {
   );
 };
 
-export default DiscalimerGeneratorPage;
+export default DisclaimerGeneratorPage;
