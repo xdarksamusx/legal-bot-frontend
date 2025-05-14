@@ -13,20 +13,31 @@ const DisclaimerModule = () => {
     setGeneratedDisclaimer,
     isOpen,
     createDisclaimer,
+    messages,
+    setMessages,
   } = useAuth();
 
-  const [formData, setFormData] = useState({ topic: "", tone: "" });
+  const [formData, setFormData] = useState({ prompt: "" });
 
   useEffect(() => {
     if (isOpen) {
-      setFormData({ topic: "", tone: "" });
+      setFormData({ prompt: "" });
       setGeneratedDisclaimer("");
     }
   }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await createDisclaimer(formData.topic, formData.tone);
+    const newUserMessage = {
+      role: "user",
+      content: formData.prompt,
+    };
+
+    const updatedMessages = [...messages, newUserMessage];
+    setMessages(updatedMessages);
+    setFormData({ prompt: "" });
+    console.log("updated messages", updatedMessages);
+    await createDisclaimer(updatedMessages);
   };
 
   return (
@@ -36,21 +47,10 @@ const DisclaimerModule = () => {
           <CloseButton />
           <div>
             <div>
-              <label>topic</label>
-              <input
-                name="topic"
-                value={formData.topic}
-                onChange={(e) =>
-                  setFormData({ ...formData, [e.target.name]: e.target.value })
-                }
-              />
-            </div>
-
-            <div>
-              <label>tone</label>
-              <input
-                name="tone"
-                value={formData.tone}
+              <label>prompt</label>
+              <textarea
+                name="prompt"
+                value={formData.prompt}
                 onChange={(e) =>
                   setFormData({ ...formData, [e.target.name]: e.target.value })
                 }

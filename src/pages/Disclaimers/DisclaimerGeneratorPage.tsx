@@ -17,13 +17,14 @@ const DisclaimerGeneratorPage = () => {
     createDisclaimer,
     disclaimers,
     setDisclaimers,
+    messages,
+    setMessages,
   } = useAuth();
   const [formData, setFormData] = useState({
-    topic: "",
-    tone: "",
+    prompt: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -34,61 +35,77 @@ const DisclaimerGeneratorPage = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    await createDisclaimer(formData.topic, formData.tone);
+    const newUserMessage = {
+      role: "user",
+      content: formData.prompt,
+    };
+
+    const updatedMessages = [...messages, newUserMessage];
+
+    const statement = await createDisclaimer(updatedMessages);
+
+    const assistantMessage = {
+      role: "assistant",
+      content: statement,
+    };
+
+    const fullMessages = [...updatedMessages, assistantMessage];
+
+    setMessages(fullMessages);
+    setFormData({ prompt: "" });
+    console.log("updated messages", updatedMessages);
+
+    await createDisclaimer(updatedMessages);
   };
 
   useEffect(() => {
-    if (generatedDisclaimer) {
-      console.log("✔️ generated disclaimer updated:", generatedDisclaimer);
+    if (messages.length > 0) {
+      console.log("Messages updated", messages);
     }
-  }, [generatedDisclaimer]);
+  }, [messages]);
 
   return (
     <>
       <h1>Disclaimers </h1>
 
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Topic</label>
-          <input
-            value={formData.topic}
-            name="topic"
-            onChange={handleChange}
-            type="topic"
-          />
-        </div>
+        <label htmlFor="prompt"></label>
 
-        <div>
-          <label>Tone</label>
-          <input
-            value={formData.tone}
-            name="tone"
-            onChange={handleChange}
-            type="tone"
-          />
-        </div>
+        <textarea
+          id="prompt"
+          name="prompt"
+          value={formData.prompt}
+          onChange={handleChange}
+        />
+
         <button>Generate</button>
       </form>
 
       <h3> Generated Disclaimer:</h3>
-      {generatedDisclaimer && (
-        <p className="mt-4 whitespace-pre-line">{generatedDisclaimer}</p>
-      )}
+
       <p></p>
       <div>
-        {" "}
+        <ul>
+          {messages.map((message, index) => (
+            <li key={index}>
+              <strong>{message.role === "user" ? "You" : "Bot"}:</strong>{" "}
+              {message.content}
+            </li>
+          ))}
+        </ul>
+
         {isLoggedIn ? (
-          <button onClick={() => logout(navigate)}> Logout</button>
+          <button onClick={() => logout(navigate)}>Logout</button>
         ) : (
           <div>
             <button>
-              {" "}
-              <Link to="/signin"> Login </Link>
+              <Link to="/signin">Login</Link>
             </button>
-            <Link to="/signup"> SignUp </Link>
+            <Link to="/signup">SignUp</Link>
           </div>
-        )}{" "}
-        <Link to="/dashboard">Dashobard</Link>
+        )}
+
+        <Link to="/dashboard">Dashboard</Link>
       </div>
     </>
   );

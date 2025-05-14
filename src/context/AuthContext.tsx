@@ -12,7 +12,9 @@ type AuthContextType = {
   generatedDisclaimer: string;
   setGeneratedDisclaimer: React.Dispatch<React.SetStateAction<string>>;
   handleCloseButton: () => void;
-  createDisclaimer: (topic: string, tone: string) => Promise<void>;
+  createDisclaimer: (
+    messages: { role: string; content: string }[]
+  ) => Promise<string>;
 
   disclaimers: Disclaimer[];
   setDisclaimers: React.Dispatch<React.SetStateAction<Disclaimer[]>>;
@@ -26,6 +28,11 @@ type AuthContextType = {
   deletion: (id: string) => Promise<void>;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  messages: { role: string; content: string }[];
+
+  setMessages: React.Dispatch<
+    React.SetStateAction<{ role: string; content: string }[]>
+  >;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -36,6 +43,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [disclaimers, setDisclaimers] = useState([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [messages, setMessages] = useState<{ role: string; content: string }[]>(
+    []
+  );
 
   const handleCloseButton = () => {
     setIsOpen((prev) => !prev);
@@ -56,7 +66,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setDisclaimers(data);
   };
 
-  const createDisclaimer = async (topic, tone) => {
+  const createDisclaimer = async (
+    messages: { role: string; content: string }[]
+  ) => {
+    const formattedPrompt = [
+      {
+        role: "system",
+        content:
+          "You are a helpful legal bot. Respond in a friendly, conversational way, using accurate but human-like disclaimers.",
+      },
+      ...messages,
+    ];
+
     try {
       const res = await fetch("http://localhost:3000/disclaimers", {
         method: "POST",
@@ -65,16 +86,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           Accept: "application/json",
         },
         body: JSON.stringify({
-          topic: topic,
-          tone: tone,
+          disclaimer: {
+            message: formattedPrompt,
+          },
         }),
         credentials: "include",
       });
 
+      console.log("response", res);
+
       const data = await res.json();
       setGeneratedDisclaimer(data.statement);
       await updateDisclaimers();
-      console.log(data, "generated disclaimer");
+      return data.statement;
     } catch (error) {
       console.error("Error generating disclaimer:", error);
       setGeneratedDisclaimer(
@@ -158,6 +182,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     console.log("isLoggedIn updated:", isLoggedIn);
   }, [isLoggedIn]);
 
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/check", {
+          method: "GET",
+          credentials: "include",
+        });
+        if (res.ok) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (err) {
+        setIsLoggedIn(false);
+      }
+    };
+    checkSession();
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -174,6 +217,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         isOpen,
         handleCloseButton,
         createDisclaimer,
+        messages,
+        setMessages,
       }}
     >
       {children}
