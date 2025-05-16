@@ -1,14 +1,22 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 
+type ChatHistory = {
+  role: string;
+  content: string;
+};
+
 type Disclaimer = {
   id: string;
   topic: string;
   tone: string;
   statement: string;
+  chat_history: ChatHistory[];
 };
 
 type AuthContextType = {
+  activeDisclaimerId: string | null;
+  setActiveDisclaimerId: React.Dispatch<React.SetStateAction<string | null>>;
   generatedDisclaimer: string;
   setGeneratedDisclaimer: React.Dispatch<React.SetStateAction<string>>;
   handleCloseButton: () => void;
@@ -38,6 +46,10 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [activeDisclaimerId, setActiveDisclaimerId] = useState<string | null>(
+    null
+  );
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [generatedDisclaimer, setGeneratedDisclaimer] = useState("");
 
@@ -86,6 +98,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           Accept: "application/json",
         },
         body: JSON.stringify({
+          disclaimer_id: activeDisclaimerId,
           disclaimer: {
             message: formattedPrompt,
           },
@@ -93,10 +106,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         credentials: "include",
       });
 
-      console.log("response", res);
-
       const data = await res.json();
+      console.log("the data", data);
       setGeneratedDisclaimer(data.statement);
+
+      if (!activeDisclaimerId) {
+        setActiveDisclaimerId(data.id);
+        await updateDisclaimers();
+      }
+
       await updateDisclaimers();
       return data.statement;
     } catch (error) {
@@ -219,6 +237,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         createDisclaimer,
         messages,
         setMessages,
+        activeDisclaimerId,
+        setActiveDisclaimerId,
       }}
     >
       {children}

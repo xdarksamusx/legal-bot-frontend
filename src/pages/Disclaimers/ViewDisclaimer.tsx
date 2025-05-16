@@ -11,8 +11,8 @@ const ViewDisclaimer = () => {
 
   const { id } = useParams<{ id: string }>();
   const [disclaimer, setDisclaimer] = useState<any>(null);
-  const { isLoggedIn, login, logout, deletion } = useAuth();
-  const [disclaimers, setDisclaimers] = useState([]);
+  const { isLoggedIn, login, logout, deletion, disclaimers, setDisclaimers } =
+    useAuth();
 
   useEffect(() => {
     if (!id) return;
@@ -35,17 +35,32 @@ const ViewDisclaimer = () => {
     setDisclaimers((prev) => prev.filter((d) => d.id != id));
   };
 
+  console.log("current view disclaimer", disclaimer);
+
   return (
     <>
-      <h1>Disclaimer information</h1>
+      <h1>Disclaimer information:</h1>
 
       {disclaimer ? (
-        <div>
-          <div>{disclaimer.statement}</div>
-        </div>
+        <>
+          {disclaimer.chat_history?.map((msg, idx) => (
+            <div key={idx}>
+              <strong>
+                {msg.role === "user"
+                  ? "You"
+                  : msg.role === "assistant"
+                  ? "Bot"
+                  : "System"}
+                :
+              </strong>{" "}
+              {msg.content}
+            </div>
+          ))}
+        </>
       ) : (
         <p>Loading...</p>
       )}
+
       <button>
         {" "}
         <Link to={`/disclaimers/${id}/edit`}>Edit</Link>
