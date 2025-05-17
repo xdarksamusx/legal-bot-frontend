@@ -19,8 +19,6 @@ const DisclaimerList = () => {
     setDisclaimers((prev) => prev.filter((d) => d.id != id));
   };
 
-  console.log("list of disclaimers", disclaimers);
-
   return (
     <>
       <ul>

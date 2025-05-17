@@ -15,6 +15,8 @@ const DisclaimerModule = () => {
     createDisclaimer,
     messages,
     setMessages,
+    activeDisclaimerId,
+    setActiveDisclaimerId,
   } = useAuth();
 
   const [formData, setFormData] = useState({ prompt: "" });
@@ -26,19 +28,37 @@ const DisclaimerModule = () => {
     }
   }, [isOpen]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const newUserMessage = {
       role: "user",
       content: formData.prompt,
     };
 
     const updatedMessages = [...messages, newUserMessage];
-    setMessages(updatedMessages);
+
+    const statement = await createDisclaimer(updatedMessages);
+
+    console.log("statement", statement);
+
+    const assistantMessage = {
+      role: "assistant",
+      content: statement,
+    };
+
+    const fullMessages = [...updatedMessages, assistantMessage];
+
+    console.log("full messages", fullMessages);
+
+    setMessages(fullMessages);
     setFormData({ prompt: "" });
-    console.log("updated messages", updatedMessages);
-    await createDisclaimer(updatedMessages);
   };
+
+  useEffect(() => {
+    if (messages.length > 0) {
+    }
+  }, [messages]);
 
   return (
     <>

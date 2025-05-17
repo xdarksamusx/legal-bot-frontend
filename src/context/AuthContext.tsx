@@ -24,6 +24,11 @@ type AuthContextType = {
     messages: { role: string; content: string }[]
   ) => Promise<string>;
 
+  continueConversation: (
+    disclaimer_id: string,
+    message: string
+  ) => Promise<Disclaimer>;
+
   disclaimers: Disclaimer[];
   setDisclaimers: React.Dispatch<React.SetStateAction<Disclaimer[]>>;
   isLoggedIn: boolean;
@@ -76,6 +81,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const data = await res.json();
 
     setDisclaimers(data);
+  };
+
+  const continueConversation = async (
+    disclaimerId: string,
+    message: string
+  ) => {
+    const formattedPrompt = [
+      {
+        role: "system",
+        content:
+          "You are a helpful legal bot. Respond in a friendly, conversational way, using accurate but human-like disclaimers.",
+      },
+      { role: "user", content: message },
+    ];
+
+    try {
+      const res = await fetch("http://localhost:3000/disclaimers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          disclaimerId,
+          disclaimer: {
+            message,
+          },
+        }),
+      });
+      const data = await res.json();
+      await updateDisclaimers();
+      return data;
+    } catch (error) {
+      console.error("Error continuing conversation", error);
+    }
   };
 
   const createDisclaimer = async (
@@ -239,6 +280,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setMessages,
         activeDisclaimerId,
         setActiveDisclaimerId,
+        continueConversation,
       }}
     >
       {children}

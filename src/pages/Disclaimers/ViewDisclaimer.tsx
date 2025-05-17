@@ -9,10 +9,27 @@ import { useNavigate } from "react-router-dom";
 const ViewDisclaimer = () => {
   const navigate = useNavigate();
 
+  const [newPrompt, setNewPrompt] = useState("");
+
   const { id } = useParams<{ id: string }>();
   const [disclaimer, setDisclaimer] = useState<any>(null);
-  const { isLoggedIn, login, logout, deletion, disclaimers, setDisclaimers } =
-    useAuth();
+  const {
+    isLoggedIn,
+    login,
+    logout,
+    deletion,
+    generatedDisclaimer,
+    setGeneratedDisclaimer,
+    isOpen,
+    createDisclaimer,
+    disclaimers,
+    setDisclaimers,
+    messages,
+    setMessages,
+    activeDisclaimerId,
+    setActiveDisclaimerId,
+    continueConversation,
+  } = useAuth();
 
   useEffect(() => {
     if (!id) return;
@@ -35,7 +52,12 @@ const ViewDisclaimer = () => {
     setDisclaimers((prev) => prev.filter((d) => d.id != id));
   };
 
-  console.log("current view disclaimer", disclaimer);
+  const handleConversation = async () => {
+    if (!disclaimer) return;
+    const updated = await continueConversation(disclaimer.id, newPrompt);
+    setDisclaimer(updated);
+    setNewPrompt("");
+  };
 
   return (
     <>
@@ -74,6 +96,15 @@ const ViewDisclaimer = () => {
         <Link to="/dashboard">Dashboard</Link>{" "}
       </div>
       <button onClick={() => logout(navigate)}>Logout</button>
+
+      <input
+        type="text"
+        placeholder="Ask a follow-up"
+        value={newPrompt}
+        onChange={(e) => setNewPrompt(e.target.value)}
+      />
+
+      <button onClick={handleConversation}>Continue Conversation</button>
     </>
   );
 };
