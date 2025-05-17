@@ -11,6 +11,7 @@ const DisclaimerList = () => {
     updateDisclaimers,
     disclaimers,
     setDisclaimers,
+    messages,
   } = useAuth();
 
   const handleDelete = async (id: string) => {
@@ -22,37 +23,30 @@ const DisclaimerList = () => {
     <>
       <ul>
         {disclaimers.map((disclaimer) => {
+          const firstUserMsg = disclaimer.chat_history?.find(
+            (msg) => msg.role === "user"
+          );
           return (
             <li
               key={disclaimer.id}
-              className="border-2 border-solid border-red-500"
+              className="border-2 border-solid border-red-500 p-4 my-2"
             >
               <div>
-                {" "}
-                <span>topic </span> {disclaimer.topic}{" "}
-              </div>
-              <div> tone: {disclaimer.tone} </div>
-              <div>
-                <span>statement:</span>
-                {disclaimer.statement}
+                <strong>Topic:</strong>{" "}
+                {firstUserMsg?.content || "(no topic found)"}
               </div>
               <div>
-                <button>
-                  {" "}
-                  <Link to={`/disclaimers/${disclaimer.id}`}>
-                    View Disclaimer
-                  </Link>{" "}
-                </button>
-
-                <button>
-                  <Link to={`/disclaimers/${disclaimer.id}/edit`}>
-                    Edit Disclaimer
-                  </Link>{" "}
-                </button>
-
+                <strong>Latest Response:</strong> {disclaimer.statement}
+              </div>
+              <div className="mt-2 space-x-2">
+                <Link to={`/disclaimers/${disclaimer.id}`}>
+                  View Disclaimer
+                </Link>
+                <Link to={`/disclaimers/${disclaimer.id}/edit`}>
+                  Edit Disclaimer
+                </Link>
                 <button onClick={() => handleDelete(disclaimer.id)}>
-                  {" "}
-                  <Link to="/dashboard">Delete</Link>
+                  Delete
                 </button>
               </div>
             </li>

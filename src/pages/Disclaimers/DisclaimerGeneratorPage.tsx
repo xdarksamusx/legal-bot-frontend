@@ -19,6 +19,8 @@ const DisclaimerGeneratorPage = () => {
     setDisclaimers,
     messages,
     setMessages,
+    activeDisclaimerId,
+    setActiveDisclaimerId,
   } = useAuth();
   const [formData, setFormData] = useState({
     prompt: "",
@@ -44,6 +46,8 @@ const DisclaimerGeneratorPage = () => {
 
     const statement = await createDisclaimer(updatedMessages);
 
+    console.log("statement", statement);
+
     const assistantMessage = {
       role: "assistant",
       content: statement,
@@ -51,16 +55,14 @@ const DisclaimerGeneratorPage = () => {
 
     const fullMessages = [...updatedMessages, assistantMessage];
 
+    console.log("full messages", fullMessages);
+
     setMessages(fullMessages);
     setFormData({ prompt: "" });
-    console.log("updated messages", updatedMessages);
-
-    await createDisclaimer(updatedMessages);
   };
 
   useEffect(() => {
     if (messages.length > 0) {
-      console.log("Messages updated", messages);
     }
   }, [messages]);
 

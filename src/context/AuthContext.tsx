@@ -1,20 +1,33 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 
+type ChatHistory = {
+  role: string;
+  content: string;
+};
+
 type Disclaimer = {
   id: string;
   topic: string;
   tone: string;
   statement: string;
+  chat_history: ChatHistory[];
 };
 
 type AuthContextType = {
+  activeDisclaimerId: string | null;
+  setActiveDisclaimerId: React.Dispatch<React.SetStateAction<string | null>>;
   generatedDisclaimer: string;
   setGeneratedDisclaimer: React.Dispatch<React.SetStateAction<string>>;
   handleCloseButton: () => void;
   createDisclaimer: (
     messages: { role: string; content: string }[]
   ) => Promise<string>;
+
+  continueConversation: (
+    disclaimer_id: string,
+    message: string
+  ) => Promise<Disclaimer>;
 
   disclaimers: Disclaimer[];
   setDisclaimers: React.Dispatch<React.SetStateAction<Disclaimer[]>>;
@@ -38,6 +51,10 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [activeDisclaimerId, setActiveDisclaimerId] = useState<string | null>(
+    null
+  );
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [generatedDisclaimer, setGeneratedDisclaimer] = useState("");
 
@@ -66,17 +83,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setDisclaimers(data);
   };
 
+  const continueConversation = async (
+    disclaimerId: string,
+    message: string
+  ) => {
+    const formattedPrompt = [{ role: "user", content: message }];
+
+    try {
+      const res = await fetch(
+        `http://localhost:3000/disclaimers/${disclaimerId}/continue`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            disclaimer: {
+              message,
+            },
+          }),
+        }
+      );
+      const data = await res.json();
+      await updateDisclaimers();
+      return data;
+    } catch (error) {
+      console.error("Error continuing conversation", error);
+    }
+  };
+
   const createDisclaimer = async (
     messages: { role: string; content: string }[]
   ) => {
-    const formattedPrompt = [
-      {
-        role: "system",
-        content:
-          "You are a helpful legal bot. Respond in a friendly, conversational way, using accurate but human-like disclaimers.",
-      },
-      ...messages,
-    ];
+    const formattedPrompt = [...messages];
 
     try {
       const res = await fetch("http://localhost:3000/disclaimers", {
@@ -86,6 +127,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           Accept: "application/json",
         },
         body: JSON.stringify({
+          disclaimer_id: activeDisclaimerId,
           disclaimer: {
             message: formattedPrompt,
           },
@@ -93,10 +135,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         credentials: "include",
       });
 
-      console.log("response", res);
-
       const data = await res.json();
       setGeneratedDisclaimer(data.statement);
+
+      if (!activeDisclaimerId) {
+        setActiveDisclaimerId(data.id);
+        await updateDisclaimers();
+      }
+
       await updateDisclaimers();
       return data.statement;
     } catch (error) {
@@ -178,9 +224,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  useEffect(() => {
-    console.log("isLoggedIn updated:", isLoggedIn);
-  }, [isLoggedIn]);
+  useEffect(() => {}, [isLoggedIn]);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -219,6 +263,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         createDisclaimer,
         messages,
         setMessages,
+        activeDisclaimerId,
+        setActiveDisclaimerId,
+        continueConversation,
       }}
     >
       {children}

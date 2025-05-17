@@ -9,10 +9,27 @@ import { useNavigate } from "react-router-dom";
 const ViewDisclaimer = () => {
   const navigate = useNavigate();
 
+  const [newPrompt, setNewPrompt] = useState("");
+
   const { id } = useParams<{ id: string }>();
   const [disclaimer, setDisclaimer] = useState<any>(null);
-  const { isLoggedIn, login, logout, deletion } = useAuth();
-  const [disclaimers, setDisclaimers] = useState([]);
+  const {
+    isLoggedIn,
+    login,
+    logout,
+    deletion,
+    generatedDisclaimer,
+    setGeneratedDisclaimer,
+    isOpen,
+    createDisclaimer,
+    disclaimers,
+    setDisclaimers,
+    messages,
+    setMessages,
+    activeDisclaimerId,
+    setActiveDisclaimerId,
+    continueConversation,
+  } = useAuth();
 
   useEffect(() => {
     if (!id) return;
@@ -35,17 +52,40 @@ const ViewDisclaimer = () => {
     setDisclaimers((prev) => prev.filter((d) => d.id != id));
   };
 
+  const handleConversation = async () => {
+    if (!disclaimer) return;
+    console.log("disclaimer id", disclaimer.id);
+    setActiveDisclaimerId(disclaimer.id);
+    const updated = await continueConversation(disclaimer.id, newPrompt);
+    console.log("checking updated conversation", updated);
+    setDisclaimer(updated);
+    setNewPrompt("");
+  };
+
   return (
     <>
-      <h1>Disclaimer information</h1>
+      <h1>Disclaimer information:</h1>
 
       {disclaimer ? (
-        <div>
-          <div>{disclaimer.statement}</div>
-        </div>
+        <>
+          {disclaimer.chat_history?.map((msg, idx) => (
+            <div key={idx}>
+              <strong>
+                {msg.role === "user"
+                  ? "You"
+                  : msg.role === "assistant"
+                  ? "Bot"
+                  : "System"}
+                :
+              </strong>{" "}
+              {msg.content}
+            </div>
+          ))}
+        </>
       ) : (
         <p>Loading...</p>
       )}
+
       <button>
         {" "}
         <Link to={`/disclaimers/${id}/edit`}>Edit</Link>
@@ -59,6 +99,15 @@ const ViewDisclaimer = () => {
         <Link to="/dashboard">Dashboard</Link>{" "}
       </div>
       <button onClick={() => logout(navigate)}>Logout</button>
+
+      <input
+        type="text"
+        placeholder="Ask a follow-up"
+        value={newPrompt}
+        onChange={(e) => setNewPrompt(e.target.value)}
+      />
+
+      <button onClick={handleConversation}>Continue Conversation</button>
     </>
   );
 };
