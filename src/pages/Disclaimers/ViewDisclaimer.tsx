@@ -54,7 +54,10 @@ const ViewDisclaimer = () => {
 
   const handleConversation = async () => {
     if (!disclaimer) return;
+    console.log("disclaimer id", disclaimer.id);
+    setActiveDisclaimerId(disclaimer.id);
     const updated = await continueConversation(disclaimer.id, newPrompt);
+    console.log("checking updated conversation", updated);
     setDisclaimer(updated);
     setNewPrompt("");
   };

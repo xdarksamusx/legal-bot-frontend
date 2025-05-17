@@ -87,30 +87,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     disclaimerId: string,
     message: string
   ) => {
-    const formattedPrompt = [
-      {
-        role: "system",
-        content:
-          "You are a helpful legal bot. Respond in a friendly, conversational way, using accurate but human-like disclaimers.",
-      },
-      { role: "user", content: message },
-    ];
+    const formattedPrompt = [{ role: "user", content: message }];
 
     try {
-      const res = await fetch("http://localhost:3000/disclaimers", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          disclaimerId,
-          disclaimer: {
-            message,
+      const res = await fetch(
+        `http://localhost:3000/disclaimers/${disclaimerId}/continue`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
           },
-        }),
-      });
+          credentials: "include",
+          body: JSON.stringify({
+            disclaimer: {
+              message,
+            },
+          }),
+        }
+      );
       const data = await res.json();
       await updateDisclaimers();
       return data;
@@ -122,14 +117,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const createDisclaimer = async (
     messages: { role: string; content: string }[]
   ) => {
-    const formattedPrompt = [
-      {
-        role: "system",
-        content:
-          "You are a helpful legal bot. Respond in a friendly, conversational way, using accurate but human-like disclaimers.",
-      },
-      ...messages,
-    ];
+    const formattedPrompt = [...messages];
 
     try {
       const res = await fetch("http://localhost:3000/disclaimers", {
@@ -148,7 +136,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       const data = await res.json();
-      console.log("the data", data);
       setGeneratedDisclaimer(data.statement);
 
       if (!activeDisclaimerId) {
@@ -237,9 +224,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  useEffect(() => {
-    console.log("isLoggedIn updated:", isLoggedIn);
-  }, [isLoggedIn]);
+  useEffect(() => {}, [isLoggedIn]);
 
   useEffect(() => {
     const checkSession = async () => {
