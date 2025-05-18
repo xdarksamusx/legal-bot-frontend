@@ -5,6 +5,8 @@ import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import ChatWidget from "pages/Disclaimers/ChatWidget";
+import ContinueChatWidget from "./ContinueChatWidget";
 
 const ViewDisclaimer = () => {
   const navigate = useNavigate();
@@ -64,50 +66,54 @@ const ViewDisclaimer = () => {
 
   return (
     <>
-      <h1>Disclaimer information:</h1>
+      <div className="relative">
+        <h1>Disclaimer information:</h1>
 
-      {disclaimer ? (
-        <>
-          {disclaimer.chat_history?.map((msg, idx) => (
-            <div key={idx}>
-              <strong>
-                {msg.role === "user"
-                  ? "You"
-                  : msg.role === "assistant"
-                  ? "Bot"
-                  : "System"}
-                :
-              </strong>{" "}
-              {msg.content}
-            </div>
-          ))}
-        </>
-      ) : (
-        <p>Loading...</p>
-      )}
+        <ContinueChatWidget />
 
-      <button>
-        {" "}
-        <Link to={`/disclaimers/${id}/edit`}>Edit</Link>
-      </button>
-      <button onClick={() => handleDelete(disclaimer.id)}>
-        {" "}
-        <Link to="/dashboard">Delete</Link>
-      </button>
-      <div>
-        {" "}
-        <Link to="/dashboard">Dashboard</Link>{" "}
+        {disclaimer ? (
+          <>
+            {disclaimer.chat_history?.map((msg, idx) => (
+              <div key={idx}>
+                <strong>
+                  {msg.role === "user"
+                    ? "You"
+                    : msg.role === "assistant"
+                    ? "Bot"
+                    : "System"}
+                  :
+                </strong>{" "}
+                {msg.content}
+              </div>
+            ))}
+          </>
+        ) : (
+          <p>Loading...</p>
+        )}
+
+        <button>
+          {" "}
+          <Link to={`/disclaimers/${id}/edit`}>Edit</Link>
+        </button>
+        <button onClick={() => handleDelete(disclaimer.id)}>
+          {" "}
+          <Link to="/dashboard">Delete</Link>
+        </button>
+        <div>
+          {" "}
+          <Link to="/dashboard">Dashboard</Link>{" "}
+        </div>
+        <button onClick={() => logout(navigate)}>Logout</button>
+
+        <input
+          type="text"
+          placeholder="Ask a follow-up"
+          value={newPrompt}
+          onChange={(e) => setNewPrompt(e.target.value)}
+        />
+
+        <button onClick={handleConversation}>Continue Conversation</button>
       </div>
-      <button onClick={() => logout(navigate)}>Logout</button>
-
-      <input
-        type="text"
-        placeholder="Ask a follow-up"
-        value={newPrompt}
-        onChange={(e) => setNewPrompt(e.target.value)}
-      />
-
-      <button onClick={handleConversation}>Continue Conversation</button>
     </>
   );
 };

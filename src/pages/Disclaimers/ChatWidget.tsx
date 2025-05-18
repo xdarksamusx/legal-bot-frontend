@@ -54,8 +54,6 @@ const ChatWidget = () => {
 
     const fullMessages = [...updatedMessages, assistantMessage];
 
-    console.log("full messages", fullMessages);
-
     setMessages(fullMessages);
     setFormData({ prompt: "" });
   };
@@ -73,7 +71,7 @@ const ChatWidget = () => {
       ></button>
 
       {isOpen && (
-        <div className="fixed bottom-20 right-4 w-8 h-[500px] -bg-white border rounded-lg shadow-lg p4 z-50 overflow-auto">
+        <div>
           <form onSubmit={handleSubmit}>
             <label htmlFor="prompt"></label>
 

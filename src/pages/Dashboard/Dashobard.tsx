@@ -4,6 +4,7 @@ import { useAuth } from "context/AuthContext";
 import { Navigate } from "react-router-dom";
 import DisclaimerList from "components/disclaimersList";
 import DisclaimerModule from "components/createDisclaimerModule";
+import ChatWidget from "pages/Disclaimers/ChatWidget";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ const Dashboard = () => {
     <>
       <div className="relative">
         <h1 className="text-3xl font-bold text-blue-500">Your Disclaimers</h1>
+        <ChatWidget />
 
         <DisclaimerList />
 
