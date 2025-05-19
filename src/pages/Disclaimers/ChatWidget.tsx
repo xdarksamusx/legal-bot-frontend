@@ -25,7 +25,7 @@ const ChatWidget = () => {
     prompt: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -68,35 +68,48 @@ const ChatWidget = () => {
   return (
     <>
       <button
-        className="fixed bottom-4 right-4 bg-blue-600 text-white p-3 rounded-full z-50 "
+        className="fixed bottom-4 right-4 bg-blue-600 text-white p-3 rounded-full z-50"
         onClick={() => setIsOpen(!isOpen)}
       ></button>
 
       {isOpen && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 bg-white border rounded-lg shadow-lg p-4 z-50 flex flex-col">
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="prompt"></label>
-
-            <textarea
-              id="prompt"
-              name="prompt"
-              value={formData.prompt}
-              onChange={handleChange}
-            />
-
-            <button>Generate</button>
-          </form>
-
-          <div className="overflow-y-auto max-h-60 mb-2 pr-1">
-            <ul>
-              {messages.map((message, index) => (
-                <li key={index}>
-                  <strong>{message.role === "user" ? "You" : "Bot"}:</strong>{" "}
-                  {message.content}
-                </li>
-              ))}
-            </ul>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-[500px] bg-white border rounded-lg shadow-lg p-4 z-50 flex flex-col">
+          <div className="w-full justify-center flex pr-4">
+            <form onSubmit={handleSubmit}>
+              <label htmlFor="prompt"></label>
+              <input
+                id="prompt"
+                name="prompt"
+                placeholder="Enter a disclaimer topic"
+                value={formData.prompt}
+                onChange={handleChange}
+                className="w-36 border rounded py-1 px-2 "
+              />
+              <div className="mt-2 flex justify-center">
+                <button className="bg-blue-600 text-white px-3 py-1 rounded">
+                  Generate
+                </button>
+              </div>
+            </form>
           </div>
+
+          <ul className="overflow-y-auto flex-1 list-none flex flex-col items-center justify-evenly pr-4">
+            {messages.map((message, index) => (
+              <li
+                key={message.content}
+                className={`mt-2 w-36 mb-2 p-2 rounded-lg text-sm ${
+                  message.role === "user"
+                    ? "bg-blue-100 text-left"
+                    : "bg-gray-100 text-left"
+                }`}
+              >
+                <strong className="block text-gray-700 mb-1">
+                  {message.role === "user" ? "You" : "Bot"}:
+                </strong>
+                <p className="whitespace-pre-line">{message.content}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </>

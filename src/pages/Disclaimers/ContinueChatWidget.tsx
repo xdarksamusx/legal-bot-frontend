@@ -66,10 +66,27 @@ const ContinueChatWidget = () => {
       ></button>
 
       {isOpen && (
-        <div className="fixed bottom-20 right-4 w-80 h-[500px] bg-red-300 border rounded-lg shadow-lg p-4 z-50 flex flex-col">
-          <div className="overflow-y-auto flex-1 pr-1">
+        <div className="fixed bottom-20 right-4 w-48 h-[500px] py-2 bg-red-300 border rounded-lg shadow-lg p-4 z-50 flex flex-col">
+          <div className="mt-2 flex gap-2 pl-2 w-48  ">
+            <input
+              type="text"
+              value={newPrompt}
+              onChange={(e) => setNewPrompt(e.target.value)}
+              placeholder="Ask a follow-up"
+              className="flex-1 border  py-1 rounded  max-w-36 pl-2 "
+            />
+          </div>
+          <ul className="overflow-y-auto flex-1 pl-1 list-none flex flex-col items-center justify-evenly  ">
+            {" "}
             {disclaimer.chat_history?.map((msg, idx) => (
-              <div key={idx} className="mb-1">
+              <li
+                key={idx}
+                className={`items-start text-left w-full w-36 mb-2 p-2 rounded-lg text-sm ${
+                  msg.role === "user"
+                    ? "bg-blue-100 text-left"
+                    : "bg-gray-100 text-left"
+                }`}
+              >
                 <strong>
                   {msg.role === "user"
                     ? "You"
@@ -79,18 +96,11 @@ const ContinueChatWidget = () => {
                   :
                 </strong>{" "}
                 {msg.content}
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
 
-          <div className="mt-2 flex gap-2">
-            <input
-              type="text"
-              value={newPrompt}
-              onChange={(e) => setNewPrompt(e.target.value)}
-              placeholder="Ask a follow-up"
-              className="flex-1 border px-2 py-1 rounded"
-            />
+          <div className="mt-2 flex justify-center">
             <button
               onClick={handleConversation}
               className="bg-blue-600 text-white px-3 py-1 rounded"
