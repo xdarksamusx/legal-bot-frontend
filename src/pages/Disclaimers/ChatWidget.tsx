@@ -54,6 +54,8 @@ const ChatWidget = () => {
 
     const fullMessages = [...updatedMessages, assistantMessage];
 
+    console.log("full messages", fullMessages);
+
     setMessages(fullMessages);
     setFormData({ prompt: "" });
   };
@@ -71,7 +73,7 @@ const ChatWidget = () => {
       ></button>
 
       {isOpen && (
-        <div>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 bg-white border rounded-lg shadow-lg p-4 z-50 flex flex-col">
           <form onSubmit={handleSubmit}>
             <label htmlFor="prompt"></label>
 
@@ -85,7 +87,7 @@ const ChatWidget = () => {
             <button>Generate</button>
           </form>
 
-          <div>
+          <div className="overflow-y-auto max-h-60 mb-2 pr-1">
             <ul>
               {messages.map((message, index) => (
                 <li key={index}>
