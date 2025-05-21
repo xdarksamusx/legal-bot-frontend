@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "context/AuthContext";
 import { useParams } from "react-router-dom";
+import { useRef } from "react";
+import Draggable from "react-draggable";
 
 const ContinueChatWidget = () => {
   const navigate = useNavigate();
@@ -30,6 +32,8 @@ const ContinueChatWidget = () => {
     prompt: "",
   });
 
+  const bottomRef = useRef(null);
+
   const [newPrompt, setNewPrompt] = useState("");
 
   const handleConversation = async () => {
@@ -41,6 +45,11 @@ const ContinueChatWidget = () => {
     setDisclaimer(updated);
     setNewPrompt("");
   };
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    console.log("scrolling");
+  }, [messages]);
 
   useEffect(() => {
     if (!id) return;
@@ -66,49 +75,52 @@ const ContinueChatWidget = () => {
       ></button>
 
       {isOpen && (
-        <div className="fixed bottom-20 right-4 w-48 h-[500px] py-2 bg-red-300 border rounded-lg shadow-lg p-4 z-50 flex flex-col">
-          <div className="mt-2 flex gap-2 pl-2 w-48  ">
-            <input
-              type="text"
-              value={newPrompt}
-              onChange={(e) => setNewPrompt(e.target.value)}
-              placeholder="Ask a follow-up"
-              className="flex-1 border  py-1 rounded  max-w-36 pl-2 "
-            />
-          </div>
-          <ul className="overflow-y-auto flex-1 pl-1 list-none flex flex-col items-center justify-evenly  ">
-            {" "}
-            {disclaimer.chat_history?.map((msg, idx) => (
-              <li
-                key={idx}
-                className={`items-start text-left w-full w-36 mb-2 p-2 rounded-lg text-sm ${
-                  msg.role === "user"
-                    ? "bg-blue-100 text-left"
-                    : "bg-gray-100 text-left"
-                }`}
-              >
-                <strong>
-                  {msg.role === "user"
-                    ? "You"
-                    : msg.role === "assistant"
-                    ? "Bot"
-                    : "System"}
-                  :
-                </strong>{" "}
-                {msg.content}
-              </li>
-            ))}
-          </ul>
+        <Draggable>
+          <div className="fixed bottom-20 right-4 w-[315px]    h-[500px] py-2 bg-red-300 border rounded-lg shadow-lg p-4 z-50 flex flex-col">
+            <div className="mt-2 flex gap-2 pl-2 w-full  justify-center ">
+              <input
+                type="text"
+                value={newPrompt}
+                onChange={(e) => setNewPrompt(e.target.value)}
+                placeholder="Ask a follow-up"
+                className="flex-1 border  py-1 rounded  max-w-36 pl-2 "
+              />
+            </div>
+            <ul className="overflow-y-auto flex-1 list-none flex flex-col items-center justify-evenly pr-4">
+              {" "}
+              {disclaimer.chat_history?.map((msg, idx) => (
+                <li
+                  key={idx}
+                  className={`mt-2 pl-4   w-full max-w[90%] mb-2 p-2 rounded-lg text-sm ${
+                    msg.role === "user"
+                      ? "bg-blue-100 text-left"
+                      : "bg-gray-100 text-left"
+                  }`}
+                >
+                  <strong>
+                    {msg.role === "user"
+                      ? "You"
+                      : msg.role === "assistant"
+                      ? "Bot"
+                      : "System"}
+                    :
+                  </strong>{" "}
+                  {msg.content}
+                </li>
+              ))}
+              <div ref={bottomRef} />
+            </ul>
 
-          <div className="mt-2 flex justify-center">
-            <button
-              onClick={handleConversation}
-              className="bg-blue-600 text-white px-3 py-1 rounded"
-            >
-              Send
-            </button>
+            <div className="mt-2 flex justify-center">
+              <button
+                onClick={handleConversation}
+                className="bg-blue-600 text-white px-3 py-1 rounded"
+              >
+                Send
+              </button>
+            </div>
           </div>
-        </div>
+        </Draggable>
       )}
     </>
   );

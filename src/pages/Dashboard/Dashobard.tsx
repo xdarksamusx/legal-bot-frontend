@@ -32,7 +32,9 @@ const Dashboard = () => {
     <>
       <div className="relative">
         <h1 className="text-3xl font-bold text-blue-500">Your Disclaimers</h1>
-        <ChatWidget />
+        <div>
+          <ChatWidget />
+        </div>
 
         <DisclaimerList />
 
