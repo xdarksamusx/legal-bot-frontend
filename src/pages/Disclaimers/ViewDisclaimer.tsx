@@ -31,6 +31,7 @@ const ViewDisclaimer = () => {
     activeDisclaimerId,
     setActiveDisclaimerId,
     continueConversation,
+    downloadPDF,
   } = useAuth();
 
   useEffect(() => {
@@ -67,7 +68,7 @@ const ViewDisclaimer = () => {
       <div className="relative">
         <h1>Disclaimer information:</h1>
 
-        <ContinueChatWidget />
+        <ContinueChatWidget id={id} />
 
         {disclaimer ? (
           <>

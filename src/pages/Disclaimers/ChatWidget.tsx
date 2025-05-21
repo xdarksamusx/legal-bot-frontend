@@ -22,6 +22,7 @@ const ChatWidget = () => {
     activeDisclaimerId,
     setActiveDisclaimerId,
     setIsOpen,
+    downloadPDF,
   } = useAuth();
   const [formData, setFormData] = useState({
     prompt: "",
@@ -49,16 +50,12 @@ const ChatWidget = () => {
 
     const statement = await createDisclaimer(updatedMessages);
 
-    console.log("statement", statement);
-
     const assistantMessage = {
       role: "assistant",
       content: statement,
     };
 
     const fullMessages = [...updatedMessages, assistantMessage];
-
-    console.log("full messages", fullMessages);
 
     setMessages(fullMessages);
     setFormData({ prompt: "" });
@@ -71,7 +68,6 @@ const ChatWidget = () => {
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    console.log("scrolling");
   }, [messages]);
 
   return (

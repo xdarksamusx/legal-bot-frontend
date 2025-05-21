@@ -5,10 +5,9 @@ import { useParams } from "react-router-dom";
 import { useRef } from "react";
 import Draggable from "react-draggable";
 
-const ContinueChatWidget = () => {
+const ContinueChatWidget = ({ id }) => {
   const navigate = useNavigate();
 
-  const { id } = useParams<{ id: string }>();
   const [disclaimer, setDisclaimer] = useState<any>(null);
   const {
     isLoggedIn,
@@ -27,6 +26,7 @@ const ContinueChatWidget = () => {
     setActiveDisclaimerId,
     setIsOpen,
     continueConversation,
+    downloadPDF,
   } = useAuth();
   const [formData, setFormData] = useState({
     prompt: "",
@@ -46,9 +46,12 @@ const ContinueChatWidget = () => {
     setNewPrompt("");
   };
 
+  const handleDownload = async () => {
+    downloadPDF(id);
+  };
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    console.log("scrolling");
   }, [messages]);
 
   useEffect(() => {
@@ -118,6 +121,7 @@ const ContinueChatWidget = () => {
               >
                 Send
               </button>
+              <button onClick={handleDownload}> Download Transcript </button>
             </div>
           </div>
         </Draggable>
