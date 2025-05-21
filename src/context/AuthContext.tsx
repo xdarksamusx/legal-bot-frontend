@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [generatedDisclaimer, setGeneratedDisclaimer] = useState("");
 
-  const [disclaimers, setDisclaimers] = useState([]);
+  const [disclaimers, setDisclaimers] = useState<Disclaimer[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [messages, setMessages] = useState<{ role: string; content: string }[]>(
     []
