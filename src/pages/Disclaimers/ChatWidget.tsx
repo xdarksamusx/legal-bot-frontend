@@ -79,7 +79,7 @@ const ChatWidget = () => {
 
       {isOpen && (
         <Draggable>
-          <div className="fixed bottom-4 right-4 w-[315px] max-h-[80vh] bg-white border rounded-lg shadow-lg p-2 z-50 flex flex-col">
+          <div className=" overflow-y-auto max-h-[80vh] fixed top-[25%] left-1/2 transform -translate-x-1/2 w-[315px] bg-white border rounded-lg shadow-lg p-2 z-50 flex flex-col">
             <div className="w-full justify-center flex pr-4  pt-10  ">
               <form onSubmit={handleSubmit}>
                 <label htmlFor="prompt"></label>

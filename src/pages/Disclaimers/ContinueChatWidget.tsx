@@ -79,7 +79,7 @@ const ContinueChatWidget = ({ id }) => {
 
       {isOpen && (
         <Draggable>
-          <div className="fixed bottom-20 right-4 w-[315px]    h-[500px] py-2 bg-red-300 border rounded-lg shadow-lg p-4 z-50 flex flex-col">
+          <div className="fixed   top-[15%]  left-1/2 transform  -translate-x-1/2 -translate-y-1/2 w-[315px]    h-[500px] py-2 bg-red-300 border rounded-lg shadow-lg p-4 z-50 flex flex-col">
             <div className="mt-2 flex gap-2 pl-2 w-full  justify-center ">
               <input
                 type="text"
