@@ -46,16 +46,12 @@ const DisclaimerGeneratorPage = () => {
 
     const statement = await createDisclaimer(updatedMessages);
 
-    console.log("statement", statement);
-
     const assistantMessage = {
       role: "assistant",
       content: statement,
     };
 
     const fullMessages = [...updatedMessages, assistantMessage];
-
-    console.log("full messages", fullMessages);
 
     setMessages(fullMessages);
     setFormData({ prompt: "" });
