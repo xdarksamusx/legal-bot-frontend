@@ -100,22 +100,27 @@ const ChatWidget = () => {
             </div>
 
             <ul className="overflow-y-auto flex-1 list-none flex flex-col items-center justify-evenly pr-4">
-              {messages.map((message, index) => (
-                <li
-                  key={message.content}
-                  className={`mt-2    w-full max-w[90%] mb-2 p-2 rounded-lg text-sm ${
-                    message.role === "user"
-                      ? "bg-blue-100 text-left"
-                      : "bg-gray-100 text-left"
-                  }`}
-                >
-                  <strong className="block text-gray-700 mb-1">
-                    {message.role === "user" ? "You" : "Bot"}:
-                  </strong>
-                  <p className="whitespace-pre-line">{message.content}</p>
-                </li>
-              ))}
-              <div ref={bottomRef} />
+              {messages.map((message, index) => {
+                const isLast =
+                  index === messages.length - 1 && message.role === "assistant";
+
+                return (
+                  <li
+                    key={message.content}
+                    ref={isLast ? bottomRef : null}
+                    className={`mt-2    w-full max-w-[90%] mb-2 p-2 rounded-lg text-sm ${
+                      message.role === "user"
+                        ? "bg-blue-100 text-left"
+                        : "bg-gray-100 text-left"
+                    }`}
+                  >
+                    <strong className="block text-gray-700 mb-1">
+                      {message.role === "user" ? "You" : "Bot"}:
+                    </strong>
+                    <p className="whitespace-pre-line">{message.content}</p>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </Draggable>

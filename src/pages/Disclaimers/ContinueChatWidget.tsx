@@ -38,11 +38,10 @@ const ContinueChatWidget = ({ id }) => {
 
   const handleConversation = async () => {
     if (!disclaimer) return;
-    console.log("disclaimer id", disclaimer.id);
     setActiveDisclaimerId(disclaimer.id);
     const updated = await continueConversation(disclaimer.id, newPrompt);
-    console.log("checking updated conversation", updated);
     setDisclaimer(updated);
+    setMessages(updated.chat_history);
     setNewPrompt("");
   };
 
@@ -79,7 +78,7 @@ const ContinueChatWidget = ({ id }) => {
 
       {isOpen && (
         <Draggable>
-          <div className="fixed   top-[15%]  left-1/2 transform  -translate-x-1/2 -translate-y-1/2 w-[315px]    h-[500px] py-2 bg-red-300 border rounded-lg shadow-lg p-4 z-50 flex flex-col">
+          <div className="overflow-y-auto max-h-[80vh] fixed top-[15%] left-1/2 transform -translate-x-1/2 w-[315px] bg-red-300 border rounded-lg shadow-lg p-4 z-50 flex flex-col">
             <div className="mt-2 flex gap-2 pl-2 w-full  justify-center ">
               <input
                 type="text"
@@ -91,27 +90,31 @@ const ContinueChatWidget = ({ id }) => {
             </div>
             <ul className="overflow-y-auto flex-1 list-none flex flex-col items-center justify-evenly pr-4">
               {" "}
-              {disclaimer.chat_history?.map((msg, idx) => (
-                <li
-                  key={idx}
-                  className={`mt-2 pl-4   w-full max-w[90%] mb-2 p-2 rounded-lg text-sm ${
-                    msg.role === "user"
-                      ? "bg-blue-100 text-left"
-                      : "bg-gray-100 text-left"
-                  }`}
-                >
-                  <strong>
-                    {msg.role === "user"
-                      ? "You"
-                      : msg.role === "assistant"
-                      ? "Bot"
-                      : "System"}
-                    :
-                  </strong>{" "}
-                  {msg.content}
-                </li>
-              ))}
-              <div ref={bottomRef} />
+              {disclaimer.chat_history?.map((msg, idx) => {
+                const isLast = idx === disclaimer.chat_history.length - 1;
+
+                return (
+                  <li
+                    ref={isLast ? bottomRef : null}
+                    key={idx}
+                    className={`mt-2 pl-4   w-full max-w[90%] mb-2 p-2 rounded-lg text-sm ${
+                      msg.role === "user"
+                        ? "bg-blue-100 text-left"
+                        : "bg-gray-100 text-left"
+                    }`}
+                  >
+                    <strong>
+                      {msg.role === "user"
+                        ? "You"
+                        : msg.role === "assistant"
+                        ? "Bot"
+                        : "System"}
+                      :
+                    </strong>{" "}
+                    {msg.content}
+                  </li>
+                );
+              })}
             </ul>
 
             <div className="mt-2 flex justify-center">
