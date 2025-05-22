@@ -38,7 +38,6 @@ const ViewDisclaimer = () => {
     if (!id) return;
 
     fetch(`http://localhost:3000/disclaimers/${id}`, {
-      method: "GET",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -46,8 +45,14 @@ const ViewDisclaimer = () => {
       credentials: "include",
     })
       .then((res) => res.json())
-      .then((data) => setDisclaimer(data))
-      .catch((err) => console.error("Failed to load disclaimer", err));
+      .then((data) => {
+        const slicedDisclaimer = {
+          ...data,
+          chat_history: data.chat_history?.slice(1),
+        };
+        setDisclaimer(slicedDisclaimer);
+      })
+      .catch((err) => console.error("failed to load disclaimer:", err));
   }, [id]);
 
   const handleDelete = async (id: string) => {
@@ -63,12 +68,14 @@ const ViewDisclaimer = () => {
     setNewPrompt("");
   };
 
+  console.log("messages", disclaimer);
+
   return (
     <>
       <div className="relative">
         <h1>Disclaimer information:</h1>
 
-        <ContinueChatWidget id={id} />
+        {disclaimer && <ContinueChatWidget id={id} />}
 
         {disclaimer ? (
           <>
