@@ -23,6 +23,7 @@ const ChatWidget = () => {
     setActiveDisclaimerId,
     setIsOpen,
     downloadPDF,
+    downloadConversation,
   } = useAuth();
   const [formData, setFormData] = useState({
     prompt: "",
@@ -94,7 +95,11 @@ const ChatWidget = () => {
                 <div className="mt-2 flex justify-center">
                   <button className="bg-blue-600 text-white px-3 py-1 rounded">
                     Generate
-                  </button>
+                  </button>{" "}
+                  <Link to={`/disclaimers/${activeDisclaimerId}/download_pdf`}>
+                    {" "}
+                    Download Conversation{" "}
+                  </Link>
                 </div>
               </form>
             </div>

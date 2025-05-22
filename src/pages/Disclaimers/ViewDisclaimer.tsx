@@ -68,8 +68,6 @@ const ViewDisclaimer = () => {
     setNewPrompt("");
   };
 
-  console.log("messages", disclaimer);
-
   return (
     <>
       <div className="relative">

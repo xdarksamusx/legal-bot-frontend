@@ -15,6 +15,7 @@ type Disclaimer = {
 };
 
 type AuthContextType = {
+  downloadConversation: () => Promise<void>;
   downloadPDF: (id: string) => Promise<void>;
   activeDisclaimerId: string | null;
   setActiveDisclaimerId: React.Dispatch<React.SetStateAction<string | null>>;
@@ -235,10 +236,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            Accept: "application/json",
+            Accept: "application/pdf",
           },
         }
       );
+      console.log("response", res);
       if (!res.ok) {
         console.log("download failed");
         return;
@@ -248,6 +250,38 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const a = document.createElement("a");
       a.href = url;
       a.download = `disclaimer-${id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading PDF", error);
+    }
+  };
+
+  const downloadConversation = async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:3000/disclaimers/${activeDisclaimerId}/download_pdf`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+      if (!res.ok) {
+        console.log("download failed");
+        return;
+      }
+      console.log("download is successful so far");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `disclaimer-${activeDisclaimerId}.pdf`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -300,6 +334,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setActiveDisclaimerId,
         continueConversation,
         downloadPDF,
+        downloadConversation,
       }}
     >
       {children}
