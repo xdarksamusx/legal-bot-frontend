@@ -137,6 +137,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       const data = await res.json();
+      console.log("lookl at data", data);
       setGeneratedDisclaimer(data.statement);
 
       if (!activeDisclaimerId) {
