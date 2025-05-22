@@ -5,6 +5,8 @@ import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import ChatWidget from "pages/Disclaimers/ChatWidget";
+import ContinueChatWidget from "./ContinueChatWidget";
 
 const ViewDisclaimer = () => {
   const navigate = useNavigate();
@@ -29,13 +31,13 @@ const ViewDisclaimer = () => {
     activeDisclaimerId,
     setActiveDisclaimerId,
     continueConversation,
+    downloadPDF,
   } = useAuth();
 
   useEffect(() => {
     if (!id) return;
 
     fetch(`http://localhost:3000/disclaimers/${id}`, {
-      method: "GET",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -43,8 +45,14 @@ const ViewDisclaimer = () => {
       credentials: "include",
     })
       .then((res) => res.json())
-      .then((data) => setDisclaimer(data))
-      .catch((err) => console.error("Failed to load disclaimer", err));
+      .then((data) => {
+        const slicedDisclaimer = {
+          ...data,
+          chat_history: data.chat_history?.slice(1),
+        };
+        setDisclaimer(slicedDisclaimer);
+      })
+      .catch((err) => console.error("failed to load disclaimer:", err));
   }, [id]);
 
   const handleDelete = async (id: string) => {
@@ -54,60 +62,64 @@ const ViewDisclaimer = () => {
 
   const handleConversation = async () => {
     if (!disclaimer) return;
-    console.log("disclaimer id", disclaimer.id);
     setActiveDisclaimerId(disclaimer.id);
     const updated = await continueConversation(disclaimer.id, newPrompt);
-    console.log("checking updated conversation", updated);
     setDisclaimer(updated);
     setNewPrompt("");
   };
 
+  console.log("messages", disclaimer);
+
   return (
     <>
-      <h1>Disclaimer information:</h1>
+      <div className="relative">
+        <h1>Disclaimer information:</h1>
 
-      {disclaimer ? (
-        <>
-          {disclaimer.chat_history?.map((msg, idx) => (
-            <div key={idx}>
-              <strong>
-                {msg.role === "user"
-                  ? "You"
-                  : msg.role === "assistant"
-                  ? "Bot"
-                  : "System"}
-                :
-              </strong>{" "}
-              {msg.content}
-            </div>
-          ))}
-        </>
-      ) : (
-        <p>Loading...</p>
-      )}
+        {disclaimer && <ContinueChatWidget id={id} />}
 
-      <button>
-        {" "}
-        <Link to={`/disclaimers/${id}/edit`}>Edit</Link>
-      </button>
-      <button onClick={() => handleDelete(disclaimer.id)}>
-        {" "}
-        <Link to="/dashboard">Delete</Link>
-      </button>
-      <div>
-        {" "}
-        <Link to="/dashboard">Dashboard</Link>{" "}
+        {disclaimer ? (
+          <>
+            {disclaimer.chat_history?.map((msg, idx) => (
+              <div key={idx}>
+                <strong>
+                  {msg.role === "user"
+                    ? "You"
+                    : msg.role === "assistant"
+                    ? "Bot"
+                    : "System"}
+                  :
+                </strong>{" "}
+                {msg.content}
+              </div>
+            ))}
+          </>
+        ) : (
+          <p>Loading...</p>
+        )}
+
+        <button>
+          {" "}
+          <Link to={`/disclaimers/${id}/edit`}>Edit</Link>
+        </button>
+        <button onClick={() => handleDelete(disclaimer.id)}>
+          {" "}
+          <Link to="/dashboard">Delete</Link>
+        </button>
+        <div>
+          {" "}
+          <Link to="/dashboard">Dashboard</Link>{" "}
+        </div>
+        <button onClick={() => logout(navigate)}>Logout</button>
+
+        <input
+          type="text"
+          placeholder="Ask a follow-up"
+          value={newPrompt}
+          onChange={(e) => setNewPrompt(e.target.value)}
+        />
+
+        <button onClick={handleConversation}>Continue Conversation</button>
       </div>
-      <button onClick={() => logout(navigate)}>Logout</button>
-
-      <input
-        type="text"
-        placeholder="Ask a follow-up"
-        value={newPrompt}
-        onChange={(e) => setNewPrompt(e.target.value)}
-      />
-
-      <button onClick={handleConversation}>Continue Conversation</button>
     </>
   );
 };

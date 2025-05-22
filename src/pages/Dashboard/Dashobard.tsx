@@ -4,6 +4,7 @@ import { useAuth } from "context/AuthContext";
 import { Navigate } from "react-router-dom";
 import DisclaimerList from "components/disclaimersList";
 import DisclaimerModule from "components/createDisclaimerModule";
+import ChatWidget from "pages/Disclaimers/ChatWidget";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -31,6 +32,9 @@ const Dashboard = () => {
     <>
       <div className="relative">
         <h1 className="text-3xl font-bold text-blue-500">Your Disclaimers</h1>
+        <div>
+          <ChatWidget />
+        </div>
 
         <DisclaimerList />
 
@@ -38,12 +42,6 @@ const Dashboard = () => {
 
         <button onClick={() => logout(navigate)}>Logout</button>
         <Link to="/">Home</Link>
-        {isOpen && (
-          <>
-            <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40" />
-            <DisclaimerModule />
-          </>
-        )}
       </div>
     </>
   );

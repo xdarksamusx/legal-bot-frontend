@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "context/AuthContext";
-import { useRef } from "react";
+  import { useParams } from "react-router-dom";
+ import { useRef } from "react";
 import Draggable from "react-draggable";
 
 const ContinueChatWidget = ({ id }) => {
@@ -24,8 +25,8 @@ const ContinueChatWidget = ({ id }) => {
     activeDisclaimerId,
     setActiveDisclaimerId,
     setIsOpen,
-    continueConversation,
-  } = useAuth();
+     downloadPDF,
+   } = useAuth();
   const [formData, setFormData] = useState({
     prompt: "",
   });
@@ -43,7 +44,11 @@ const ContinueChatWidget = ({ id }) => {
     setNewPrompt("");
   };
 
-  useEffect(() => {
+   const handleDownload = async () => {
+    downloadPDF(id);
+  };
+
+   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -118,7 +123,8 @@ const ContinueChatWidget = ({ id }) => {
               >
                 Send
               </button>
-            </div>
+               <button onClick={handleDownload}> Download Transcript </button>
+             </div>
           </div>
         </Draggable>
       )}

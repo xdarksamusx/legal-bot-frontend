@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "context/AuthContext";
 import { Navigate } from "react-router-dom";
+import Draggable from "react-draggable";
 
 const DisclaimerGeneratorPage = () => {
   const navigate = useNavigate();
@@ -46,16 +47,12 @@ const DisclaimerGeneratorPage = () => {
 
     const statement = await createDisclaimer(updatedMessages);
 
-    console.log("statement", statement);
-
     const assistantMessage = {
       role: "assistant",
       content: statement,
     };
 
     const fullMessages = [...updatedMessages, assistantMessage];
-
-    console.log("full messages", fullMessages);
 
     setMessages(fullMessages);
     setFormData({ prompt: "" });

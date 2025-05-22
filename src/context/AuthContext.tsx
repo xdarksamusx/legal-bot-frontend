@@ -15,6 +15,7 @@ type Disclaimer = {
 };
 
 type AuthContextType = {
+  downloadPDF: (id: string) => Promise<void>;
   activeDisclaimerId: string | null;
   setActiveDisclaimerId: React.Dispatch<React.SetStateAction<string | null>>;
   generatedDisclaimer: string;
@@ -58,7 +59,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [generatedDisclaimer, setGeneratedDisclaimer] = useState("");
 
-  const [disclaimers, setDisclaimers] = useState([]);
+  const [disclaimers, setDisclaimers] = useState<Disclaimer[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [messages, setMessages] = useState<{ role: string; content: string }[]>(
     []
@@ -136,6 +137,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       const data = await res.json();
+      console.log("lookl at data", data);
       setGeneratedDisclaimer(data.statement);
 
       if (!activeDisclaimerId) {
@@ -224,6 +226,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const downloadPDF = async (id: string) => {
+    try {
+      const res = await fetch(
+        `http://localhost:3000/disclaimers/${id}/download_pdf`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+      if (!res.ok) {
+        console.log("download failed");
+        return;
+      }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `disclaimer-${id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading PDF", error);
+    }
+  };
+
   useEffect(() => {}, [isLoggedIn]);
 
   useEffect(() => {
@@ -266,6 +299,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         activeDisclaimerId,
         setActiveDisclaimerId,
         continueConversation,
+        downloadPDF,
       }}
     >
       {children}
