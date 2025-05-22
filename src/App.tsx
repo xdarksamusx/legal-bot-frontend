@@ -7,6 +7,7 @@ import { AuthProvider } from "context/AuthContext";
 import Dashboard from "pages/Dashboard/Dashobard";
 import ViewDisclaimer from "pages/Disclaimers/ViewDisclaimer";
 import EditDisclaimer from "pages/Disclaimers/EditDisclaimer";
+import DownloadedPDF from "pages/DownloadedPDF";
 
 const App = () => {
   return (
@@ -18,6 +19,10 @@ const App = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/disclaimers/:id" element={<ViewDisclaimer />} />
         <Route path="/disclaimers/:id/edit" element={<EditDisclaimer />} />
+        <Route
+          path="/disclaimers/:id/download_pdf"
+          element={<DownloadedPDF />}
+        />
       </Routes>
     </AuthProvider>
   );
