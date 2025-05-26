@@ -33,6 +33,12 @@ const ContinueChatWidget = ({ id }) => {
     prompt: "",
   });
 
+  const [size, setSize] = useState({ width: 315, height: 300 });
+  const [position, setPosition] = useState({
+    x: window.innerWidth / 2 - 160,
+    y: window.innerHeight / 4,
+  });
+
   const bottomRef = useRef(null);
 
   const [newPrompt, setNewPrompt] = useState("");
@@ -80,17 +86,20 @@ const ContinueChatWidget = ({ id }) => {
 
       {isOpen && (
         <Rnd
-          default={{
-            x: window.innerWidth / 2 - 160,
-            y: window.innerHeight / 4,
-            width: 315,
-            height: "auto",
-          }}
           style={{
             display: "flex",
             flexDirection: "column",
-            maxHeight: "90vh",
-            height: 600, // Crucial for default size
+            backgroundColor: "white",
+            maxHeight: "80vh",
+          }}
+          size={size}
+          onDragStop={(e, d) => setPosition({ x: d.x, y: d.y })}
+          onResizeStop={(e, direction, ref, delta, pos) => {
+            setSize({
+              width: parseInt(ref.style.width, 10),
+              height: parseInt(ref.style.height, 10),
+            });
+            setPosition(pos);
           }}
           enableResizing={{
             top: true,
@@ -104,7 +113,7 @@ const ContinueChatWidget = ({ id }) => {
           }}
           bounds="window"
           minWidth={300}
-          minHeight={300}
+          minHeight={100}
           resizeHandleStyles={{
             top: {
               top: "-6px",
@@ -191,9 +200,9 @@ const ContinueChatWidget = ({ id }) => {
               borderRadius: "4px",
             },
           }}
-          className="relative z-50 bg-white rounded-lg shadow-lg"
+          className="relative z-50 bg-green-100 rounded-lg shadow-lg flex-grow"
         >
-          <div className="flex flex-col w-full flex-grow p-4 box-border bg-white border rounded-lg shadow-lg">
+          <div className="flex flex-col h-full w-full overflow-hidden p-4 box-border bg-white rounded-lg shadow-lg">
             <div className="bg-red-600 w-5 h-4 flex items-center justify-center">
               <CloseButton />
             </div>
@@ -209,7 +218,7 @@ const ContinueChatWidget = ({ id }) => {
             </div>
 
             {/* Scrollable Chat History Area */}
-            <div className="overflow-y-auto my-2 px-2 box-border max-h-[40vh]">
+            <div className="flex-1 min-h-0 overflow-y-auto scroll-smooth my-2 px-2 box-border">
               <ul className="list-none flex flex-col gap-2 w-full">
                 {disclaimer.chat_history?.map((msg, idx) => {
                   const isLast = idx === disclaimer.chat_history.length - 1;
